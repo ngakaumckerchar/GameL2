@@ -16,8 +16,9 @@
         var width = 1000;
         var height = 800;
 
-        var playerXpos = width / 2;
+        var playerXpos = width / 2;//starting position
         var playerYpos = height / 2;
+
         var playerXspeed = 8;
         var playerYspeed = 8;
         var PLAYER_SIZE = 20;
@@ -39,13 +40,17 @@
 
         function mainloop() {
             colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
-            colorRect(playerXpos, playerYpos, PLAYER_SIZE, PLAYER_SIZE, 'red');
+            colorRect(playerXpos, playerYpos, PLAYER_SIZE, PLAYER_SIZE, 'white');//player colour
             PlayerMove();
+            drawEnemy();
         }
 
         function colorRect(x, y, w, h, c) {
             canvasContext.fillStyle = c;
             canvasContext.fillRect(x, y, w, h);
+        }
+        function drawEnemy(){
+
         }
 
         function keyPressed(evt) { //Key Press Player Movement
