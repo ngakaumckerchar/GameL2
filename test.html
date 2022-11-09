@@ -16,19 +16,20 @@
         }
         var playerXsource = 0;
         var playerYsource = 0;
-        const PLAYER_WIDTH = 76;
+        const PLAYER_WIDTH = 75;
         const PLAYER_HEIGHT = 102;
-        var playerXpos = 10;
-        var playerYpos = 100;
-        var playerYspeed = 2;
-        var playerXspeed = 2;
-
+        var playerXpos = 40;
+        var playerYpos = 400;
+        var playerYspeed = 5;
+        var playerXspeed = 5;
         var playerSpriteArray = [];
         const PLAYER_SPRITES = 16;
         var playerSpriteNum = 0;
         var playerSpriteSheetCols = 0;
-        var antiFrameRate = 0.3;
+        var antiFrameRate = 0.2;
 
+        var enemies = [];
+        var stars = [];
         //key presses
         const RIGHT_KEY = 39;
         const LEFT_KEY = 37;
@@ -39,13 +40,115 @@
         var downKeyPreased = false;
         var upKeyPreased = false;
 
+        var starting = true;
+        var eNum = 8;
+        var sNum = 90;
+        var pass = false;
+        while (pass == false) {//Needs to be answered to pass
+        diff = prompt('How hard do you want it?', 'easy or hard')
+        diff = diff.toLowerCase()//converts to lowercase
+        if (diff == 'easy' || diff == 'hard') { //only easy and hard will be acepted
+                pass = true;//allows pass
+            }
+    }
+
+        if (diff == 'easy') {
+            eNum = 5;
+            sNum = 20;
+        }
+
+        if (diff == 'hard') {
+            eNum = 10;
+            sNum = 20;
+        }
+
+
         function mainloop() {
             colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
-            drawSprite(imgAssests.player, playerXsource, playerYsource, PLAYER_WIDTH,
-                PLAYER_HEIGHT, playerXpos, playerYpos, PLAYER_WIDTH, PLAYER_HEIGHT)
+            drawSprite(imgAssests.player, playerXsource, playerYsource, PLAYER_WIDTH, 
+            PLAYER_HEIGHT, playerXpos, playerYpos, PLAYER_WIDTH, PLAYER_HEIGHT)
             playerAnimation()
-            playerMove()
+            if(starting){
+                for(i=0; i < sNum; i++){
+                    makeStar()
+                }
+                for(i=0; i < eNum; i++){
+                makeEnemy() 
+            }   
+            starting = false;
         }
+            playerMove()
+            enemyMove()
+            drawEnemy()
+            drawStar()
+            starMove()
+        }
+
+        function makeEnemy() { //enemies make
+            var ENEMY_SIZE = 35;
+            var eXpos = Math.floor(Math.random() * (canvas.width - ENEMY_SIZE));
+            var eYpos = 0;
+            var eXspeed = 3;
+            var eYspeed = Math.floor(Math.random(i) * (15 - 7) + 1);//3.28
+            var enemy = {
+                eXpos: eXpos,
+                eYpos: eYpos,
+                ENEMY_SIZE: ENEMY_SIZE,
+                eXspeed: eXspeed,
+                eYspeed: eYspeed
+            }
+            enemies.push(enemy);
+        } //End Function
+
+        function enemyMove() { //enemy back to top
+            enemies.forEach(function(e, i, array) {
+                e.eYpos += e.eYspeed;
+                if (e.eYpos > canvas.height) {
+                    // score++;
+                    e.eYpos = 0;
+                    e.eYspeed = Math.floor(Math.random(i) * (15 - 7) + 1);//randomizes speed
+                    e.eXpos = Math.floor(Math.random() * (canvas.width - 0) + 5)//randomizes placment
+                }
+                if (e.eYpos + e.ENEMY_SIZE > playerYpos &&
+                    e.eYpos < playerYpos + PLAYER_WIDTH &&
+                    e.eXpos + e.ENEMY_SIZE > playerXpos &&
+                    e.eXpos < playerXpos + PLAYER_HEIGHT) {
+                    playerXpos = 0;
+                    playerYpos = canvas.height - PLAYER_HEIGHT;
+                    console.log("hit"); //Colosion palyer and enemy
+                    starting = false;
+                }
+
+            });
+        } //End Function
+
+        function makeStar() { //enemies make
+            var STAR_SIZE = 10;
+            var sXpos = Math.floor(Math.random() * (canvas.width - STAR_SIZE));
+            var sYpos = 0;
+            var sXspeed = 3;
+            var sYspeed = Math.floor(Math.random(i) * (15 - 7) + 1);
+            var star = {
+                sXpos: sXpos,
+                sYpos: sYpos,
+                STAR_SIZE: STAR_SIZE,
+                sXspeed: sXspeed,
+                sYspeed: sYspeed
+            }
+            stars.push(star);
+        } //End Function
+
+        function starMove() { //enemy back to top
+            stars.forEach(function(e, i, array) {
+                e.sYpos += e.sYspeed;
+                if (e.sYpos > canvas.height) {
+                    e.sYpos = 0;
+                    e.sYspeed = Math.floor(Math.random(i) * (15 - 7) + 5);//randomizes speed
+                    e.sXpos = Math.floor(Math.random() * (canvas.width - 0) + 5)//randomizes placment
+                }            
+            });
+        } //End Function
+
 
         function loadImgAssests() {
             imgs = {};
@@ -53,7 +156,6 @@
             imgs.player.src = 'Images/testPlayer.png';
             return imgs;
         }
-
         for (i = 0; i < PLAYER_SPRITES; i++) {
             playerSpriteArray[i] = new Array(2);
             playerSpriteArray[i][0] = PLAYER_WIDTH * (i % 4);
@@ -66,8 +168,6 @@
         }
 
         function playerAnimation() {
-            playerSpriteNum += antiFrameRate;
-
             if (playerSpriteNum > 15)[
                 playerSpriteNum = 0
             ]
@@ -79,18 +179,38 @@
             if (upKeyPreased && playerYpos > 0) {
                 playerSpriteNum += antiFrameRate;
                 playerYpos -= playerYspeed;
+                if (playerSpriteNum > 15)[
+                playerSpriteNum = 12
+            ]
+            if (playerSpriteNum < 11)[
+                playerSpriteNum = 12
+            ]
             }
-            if (downKeyPreased && playerYpos < 600) {
+            if (downKeyPreased && playerYpos < canvas.height - PLAYER_HEIGHT) {
                 playerSpriteNum += antiFrameRate;
                 playerYpos += playerYspeed;
+                if (playerSpriteNum > 4)[
+                playerSpriteNum = 0
+            ]
             }
             if (leftKeyPreased && playerXpos > 0) {
                 playerSpriteNum += antiFrameRate;
                 playerXpos -= playerXspeed;
+                if (playerSpriteNum > 12)[
+                playerSpriteNum = 8
+            ]
+            if(playerSpriteNum < 8)[
+                playerSpriteNum = 8
+            ]
             }
-            if (rightKeyPreased && playerXpos < 600) {
+            if (rightKeyPreased && playerXpos < canvas.width - PLAYER_WIDTH) {
                 playerSpriteNum += antiFrameRate;
                 playerXpos += playerXspeed;
+                if (playerSpriteNum > 8)[
+                playerSpriteNum = 4
+            ]
+            if(playerSpriteNum < 4)
+            playerSpriteNum = 4
             }
         }
 
@@ -98,6 +218,18 @@
             canvasContext.drawImage(img, sX, sY, sW, sH, dX, dY, dW, dH);
         }
 
+        function drawEnemy() { //Draw Enemy
+            enemies.forEach(function(e, i, array) {
+                colorRect(e.eXpos, e.eYpos, e.ENEMY_SIZE, e.ENEMY_SIZE, 'red'); //enemy colour
+            });
+        } //End Function
+
+        function drawStar() { //Draw Star
+            stars.forEach(function(e, i, array) {
+                colorRect(e.sXpos, e.sYpos, e.STAR_SIZE, e.STAR_SIZE, 'white'); //Star colour
+            });
+        } //End Function
+        
         function colorRect(x, y, w, h, color) {
             canvasContext.fillStyle = color;
             canvasContext.fillRect(x, y, w, h);
