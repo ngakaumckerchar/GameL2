@@ -30,6 +30,7 @@
 
         var enemies = [];
         var stars = [];
+
         //key presses
         const RIGHT_KEY = 39;
         const LEFT_KEY = 37;
@@ -41,8 +42,17 @@
         var upKeyPreased = false;
 
         var starting = true;
+        var playing = true;
+        var score = 0;
+        var gameRun = true;
+
         var eNum = 8;
         var sNum = 90;
+
+        var userName = '';
+        while (userName == '' || userName == null) {
+            userName = prompt('Whats your name?') //Asks for name
+        }
         var pass = false;
         while (pass == false) {//Needs to be answered to pass
         diff = prompt('How hard do you want it?', 'easy or hard')
@@ -51,20 +61,20 @@
                 pass = true;//allows pass
             }
     }
-
         if (diff == 'easy') {
             eNum = 5;
             sNum = 20;
         }
-
         if (diff == 'hard') {
             eNum = 10;
             sNum = 20;
         }
 
-
         function mainloop() {
+            if(gameRun){
+                if (playing) {
             colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
+            colorText('score: ' + score, 10, 20, '20px Arial', 'white') //score display ingame
             drawSprite(imgAssests.player, playerXsource, playerYsource, PLAYER_WIDTH, 
             PLAYER_HEIGHT, playerXpos, playerYpos, PLAYER_WIDTH, PLAYER_HEIGHT)
             playerAnimation()
@@ -82,6 +92,12 @@
             drawEnemy()
             drawStar()
             starMove()
+    }
+    } else {
+        // document.body.innerHTML = '<button> Restart?? </button>';
+                colorRect(0, 0, canvas.width, canvas.height, 'red'); //end game bg
+                colorText(userName + ' ' + 'scored: ' + score, 100, 50, '40px Arial', 'black'); //end game text display
+            }
         }
 
         function makeEnemy() { //enemies make
@@ -104,7 +120,7 @@
             enemies.forEach(function(e, i, array) {
                 e.eYpos += e.eYspeed;
                 if (e.eYpos > canvas.height) {
-                    // score++;
+                    score++;
                     e.eYpos = 0;
                     e.eYspeed = Math.floor(Math.random(i) * (15 - 7) + 1);//randomizes speed
                     e.eXpos = Math.floor(Math.random() * (canvas.width - 0) + 5)//randomizes placment
@@ -116,7 +132,9 @@
                     playerXpos = 0;
                     playerYpos = canvas.height - PLAYER_HEIGHT;
                     console.log("hit"); //Colosion palyer and enemy
+                    playing = false;
                     starting = false;
+                    gameRun = false;
                 }
 
             });
@@ -234,6 +252,12 @@
             canvasContext.fillStyle = color;
             canvasContext.fillRect(x, y, w, h);
         }
+
+        function colorText(msg, x, y, f, c) { //colours text
+            canvasContext.font = f;
+            canvasContext.fillStyle = c;
+            canvasContext.fillText(msg, x, y);
+        } //End Function
 
         function keyPressed(evt) { //Key Press Player Movement
             if (evt.keyCode == RIGHT_KEY) {
