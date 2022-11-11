@@ -16,9 +16,10 @@
         }
         var playerXsource = 0;
         var playerYsource = 0;
-        const PLAYER_WIDTH = 75;
-        const PLAYER_HEIGHT = 102;
-        var playerXpos = 40;
+        const PLAYER_WIDTH = 400;
+        const PLAYER_HEIGHT = 100;
+        const PLAYER_SIZE = 50;
+        var playerXpos = 300;
         var playerYpos = 400;
         var playerYspeed = 5;
         var playerXspeed = 5;
@@ -26,7 +27,7 @@
         const PLAYER_SPRITES = 16;
         var playerSpriteNum = 0;
         var playerSpriteSheetCols = 0;
-        var antiFrameRate = 0.2;
+        var antiFrameRate = 0.1;
 
         var enemies = [];
         var stars = [];
@@ -34,12 +35,8 @@
         //key presses
         const RIGHT_KEY = 39;
         const LEFT_KEY = 37;
-        const DOWN_KEY = 40;
-        const UP_KEY = 38;
         var rightKeyPreased = false;
         var leftKeyPreased = false;
-        var downKeyPreased = false;
-        var upKeyPreased = false;
 
         var starting = true;
         var playing = true;
@@ -47,8 +44,9 @@
         var gameRun = true;
 
         var eNum = 8;
-        var sNum = 90;
+        var sNum = 0;
 
+        alert('Arrow keys to move')
         var userName = '';
         while (userName == '' || userName == null) {
             userName = prompt('Whats your name?') //Asks for name
@@ -62,12 +60,12 @@
             }
     }
         if (diff == 'easy') {
-            eNum = 5;
-            sNum = 20;
+            eNum = 3;
+            sNum = 50;
         }
         if (diff == 'hard') {
-            eNum = 10;
-            sNum = 20;
+            eNum = 6;
+            sNum = 50;
         }
 
         function mainloop() {
@@ -75,8 +73,7 @@
                 if (playing) {
             colorRect(0, 0, canvas.width, canvas.height, 'black'); // bg
             colorText('score: ' + score, 10, 20, '20px Arial', 'white') //score display ingame
-            drawSprite(imgAssests.player, playerXsource, playerYsource, PLAYER_WIDTH, 
-            PLAYER_HEIGHT, playerXpos, playerYpos, PLAYER_WIDTH, PLAYER_HEIGHT)
+            drawSprite(imgAssests.player, playerXsource, playerYsource, 384 , 500 , playerXpos, playerYpos, 50, 100)
             playerAnimation()
             if(starting){
                 for(i=0; i < sNum; i++){
@@ -93,10 +90,10 @@
             drawStar()
             starMove()
     }
-    } else {
-        // document.body.innerHTML = '<button> Restart?? </button>';
+    } else { 
                 colorRect(0, 0, canvas.width, canvas.height, 'red'); //end game bg
                 colorText(userName + ' ' + 'scored: ' + score, 100, 50, '40px Arial', 'black'); //end game text display
+
             }
         }
 
@@ -123,7 +120,7 @@
                     score++;
                     e.eYpos = 0;
                     e.eYspeed = Math.floor(Math.random(i) * (15 - 7) + 1);//randomizes speed
-                    e.eXpos = Math.floor(Math.random() * (canvas.width - 0) + 5)//randomizes placment
+                    e.eXpos = Math.floor(Math.random() * (canvas.width - 0) + 10)//randomizes placment
                 }
                 if (e.eYpos + e.ENEMY_SIZE > playerYpos &&
                     e.eYpos < playerYpos + PLAYER_WIDTH &&
@@ -141,7 +138,7 @@
         } //End Function
 
         function makeStar() { //enemies make
-            var STAR_SIZE = 10;
+            var STAR_SIZE = 5;
             var sXpos = Math.floor(Math.random() * (canvas.width - STAR_SIZE));
             var sYpos = 0;
             var sXspeed = 3;
@@ -171,7 +168,7 @@
         function loadImgAssests() {
             imgs = {};
             imgs.player = new Image();
-            imgs.player.src = 'Images/testPlayer.png';
+            imgs.player.src = 'Images/Player.png';
             return imgs;
         }
         for (i = 0; i < PLAYER_SPRITES; i++) {
@@ -186,7 +183,8 @@
         }
 
         function playerAnimation() {
-            if (playerSpriteNum > 15)[
+            playerSpriteNum += antiFrameRate;
+            if (playerSpriteNum > 3)[
                 playerSpriteNum = 0
             ]
         }
@@ -194,42 +192,13 @@
         function playerMove() {
             playerXsource = playerSpriteArray[Math.floor(playerSpriteNum)][0];
             playerYsource = playerSpriteArray[Math.floor(playerSpriteNum)][1];
-            if (upKeyPreased && playerYpos > 0) {
-                playerSpriteNum += antiFrameRate;
-                playerYpos -= playerYspeed;
-                if (playerSpriteNum > 15)[
-                playerSpriteNum = 12
-            ]
-            if (playerSpriteNum < 11)[
-                playerSpriteNum = 12
-            ]
-            }
-            if (downKeyPreased && playerYpos < canvas.height - PLAYER_HEIGHT) {
-                playerSpriteNum += antiFrameRate;
-                playerYpos += playerYspeed;
-                if (playerSpriteNum > 4)[
-                playerSpriteNum = 0
-            ]
-            }
             if (leftKeyPreased && playerXpos > 0) {
-                playerSpriteNum += antiFrameRate;
                 playerXpos -= playerXspeed;
-                if (playerSpriteNum > 12)[
-                playerSpriteNum = 8
-            ]
-            if(playerSpriteNum < 8)[
-                playerSpriteNum = 8
-            ]
             }
-            if (rightKeyPreased && playerXpos < canvas.width - PLAYER_WIDTH) {
-                playerSpriteNum += antiFrameRate;
+            if (rightKeyPreased && playerXpos < canvas.width - PLAYER_SIZE) {
                 playerXpos += playerXspeed;
-                if (playerSpriteNum > 8)[
-                playerSpriteNum = 4
-            ]
-            if(playerSpriteNum < 4)
-            playerSpriteNum = 4
             }
+
         }
 
         function drawSprite(img, sX, sY, sW, sH, dX, dY, dW, dH) {
@@ -259,33 +228,21 @@
             canvasContext.fillText(msg, x, y);
         } //End Function
 
-        function keyPressed(evt) { //Key Press Player Movement
+        function keyPressed(evt) { //Key Press
             if (evt.keyCode == RIGHT_KEY) {
                 rightKeyPreased = true;
             }
             if (evt.keyCode == LEFT_KEY) {
                 leftKeyPreased = true;
             }
-            if (evt.keyCode == DOWN_KEY) {
-                downKeyPreased = true;
-            }
-            if (evt.keyCode == UP_KEY) {
-                upKeyPreased = true;
-            }
         } //End Function
 
-        function keyReleased(evt) { //Key Release Player Movement
+        function keyReleased(evt) { //Key Release
             if (evt.keyCode == RIGHT_KEY) {
                 rightKeyPreased = false;
             }
             if (evt.keyCode == LEFT_KEY) {
                 leftKeyPreased = false;
-            }
-            if (evt.keyCode == DOWN_KEY) {
-                downKeyPreased = false;
-            }
-            if (evt.keyCode == UP_KEY) {
-                upKeyPreased = false;
             }
         } //End Function
     </script>
