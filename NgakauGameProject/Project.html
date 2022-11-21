@@ -2,7 +2,7 @@
 
 <body>
     <canvas id="gameCanvas" width="600" height="600"></canvas>
-    <script>
+    <script onload="startGame()">
         var canvas, canvasContext, imgAssests;
         window.onload = function () {
             canvas = document.getElementById('gameCanvas');
@@ -14,6 +14,8 @@
 
             setInterval(mainloop, 1000 / 50);
         }
+        const pagecode = document.documentElement.innerHtml;
+
         var playerXsource = 0;
         var playerYsource = 0;
         const PLAYER_WIDTH = 400;
@@ -89,14 +91,16 @@
             drawEnemy()
             drawStar()
             starMove()
+            startGame()
     }
     } else { 
                 colorRect(0, 0, canvas.width, canvas.height, 'red'); //end game bg
                 colorText(userName + ' ' + 'scored: ' + score, 100, 50, '40px Arial', 'black'); //end game text display
-
             }
         }
 
+        function startGame(){
+        }
         function makeEnemy() { //enemies make
             var ENEMY_SIZE = 35;
             var eXpos = Math.floor(Math.random() * (canvas.width - ENEMY_SIZE));
@@ -142,7 +146,7 @@
             var sXpos = Math.floor(Math.random() * (canvas.width - STAR_SIZE));
             var sYpos = 0;
             var sXspeed = 3;
-            var sYspeed = Math.floor(Math.random(i) * (15 - 7) + 1);
+            var sYspeed = Math.floor(Math.random(i) * (15 - 2) + 10);
             var star = {
                 sXpos: sXpos,
                 sYpos: sYpos,
@@ -246,4 +250,7 @@
             }
         } //End Function
     </script>
+                    <html>
+                        <button onclick="window.location.reload() = ''; document.documentElement.innerHtml = pagecode;">Restart</button>
+                        </html>
 </body>
